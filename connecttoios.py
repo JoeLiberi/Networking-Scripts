@@ -25,20 +25,8 @@ class ConnectToIOS():
 		send_enable(remote_conn, password)
 
 		output = send_command(remote_conn, self.cmd)
-		# # output = remote_conn.recv(5000)
 
-		# print(output.decode('ascii'))
-		# # timeout = 3.0
-
-		# # endtime = time.time() + timeout
-
-		# # while not stdout.channel.eof_received:
-		# # 	time.sleep(1)
-		# # 	if time.time() > endtime:
-		# # 		stdout.channel.close()
-		# # 		break
-
-		# # print(stdout.read())
+		print(output.decode('ascii'))
 
 def send_command(shell, cmd):
 
