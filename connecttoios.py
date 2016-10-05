@@ -30,10 +30,13 @@ class ConnectToIOS():
 
 	def PrintOutput(self):
 
-		print(self.output.decode('ascii'))
+		print(self.output)
 
 	def CheckOS(self):
 		self.remote_conn.send_ready()
+		# Turn off paging
+		disable_paging(self.remote_conn)
+
 		self.output = send_command(self.remote_conn, "sh ver")
 		ios_regex = re.compile(r'(Cisco IOS Software)')
 		self.output = self.output.decode('ascii')
@@ -47,8 +50,10 @@ def send_command(shell, cmd):
 
 	print("Executing command: " + cmd)
 	shell.send(cmd + '\n')
+	# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
 	time.sleep(1)
 	output = shell.recv(5000)
+	# output = stdout.read()
 
 	return output
 
