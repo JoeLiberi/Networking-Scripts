@@ -34,24 +34,24 @@ if __name__ == '__main__':
 	
 	if args.asa:
 		asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.command)
+		asa_conn.ConnectASA()
 
 		if asa_conn.CheckOS():
-			asa_conn.ConnectASA()
 			asa_conn.SendASA()
 			asa_conn.PrintOutput()
 		else:
-			print("You are using the wrong arg, this is for ASA devices, user -i")
+			print("You are using the wrong arg, this is for ASA devices, use -i")
 			print(parser.print_help())
 
 	elif args.ios:
 		ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.command)
+		ios_conn.ConnectIOS()
 
 		if ios_conn.CheckOS():
-			ios_conn.ConnectIOS()
 			ios_conn.SendIOS()
 			ios_conn.PrintOutput()
 		else:
-			print("You are using the wrong arg, this is for IOS devices, user -a")
+			print("You are using the wrong arg, this is for IOS devices, use -a")
 			print(parser.print_help())
 
 	else:

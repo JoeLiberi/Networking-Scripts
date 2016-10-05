@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import paramiko, time, os
+import paramiko, time, os, re
 
 class ConnectToIOS():
 
@@ -9,25 +9,23 @@ class ConnectToIOS():
 		self.username = username
 		self.password = password
 		self.cmd = cmd
-		self.CheckOS()
 
 	def ConnectIOS(self):
 
-		ssh=paramiko.SSHClient()
-		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+		self.ssh=paramiko.SSHClient()
+		self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
 		print("Opening connection please wait.....\n")
-		ssh.connect(self.ip, username=self.username, password=self.password,look_for_keys=False, allow_agent=False)
+		self.ssh.connect(self.ip, username=self.username, password=self.password,look_for_keys=False, allow_agent=False)
 
-		self.remote_conn = ssh.invoke_shell()	
-
-		return remote_conn
+		self.remote_conn = self.ssh.invoke_shell()
+		self.remote_conn.send_ready()	
+		send_enable(self.remote_conn, self.password)
 
 	def SendIOS(self):
+		self.remote_conn.send_ready()
 		# Turn off paging
-		disable_paging(remote_conn)
-
-		send_enable(remote_conn, self.password)
+		disable_paging(self.remote_conn)
 		self.output = send_command(self.remote_conn, self.cmd)
 
 	def PrintOutput(self):
@@ -35,6 +33,7 @@ class ConnectToIOS():
 		print(self.output.decode('ascii'))
 
 	def CheckOS(self):
+		self.remote_conn.send_ready()
 		self.output = send_command(self.remote_conn, "sh ver")
 		ios_regex = re.compile(r'(Cisco IOS Software)')
 		self.output = self.output.decode('ascii')
