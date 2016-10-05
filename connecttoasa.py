@@ -10,6 +10,7 @@ class ConnectToASA():
 		self.username = username
 		self.password = password
 		self.cmd = cmd
+		self.CheckOS()
 
 	def ConnectASA(self):
 
