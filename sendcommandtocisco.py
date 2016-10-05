@@ -3,7 +3,7 @@
 
 import argparse, re
 
-ipaddress_regex = re.compile('\d+.\d+.\d+.\d+')
+ipaddress_regex = re.compile(r'(\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}\b)')
 
 
 if __name__ == '__main__':

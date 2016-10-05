@@ -24,9 +24,10 @@ class ConnectToIOS():
 
 		send_enable(remote_conn, password)
 
-		output = send_command(remote_conn, self.cmd)
+		self.output = send_command(remote_conn, self.cmd)
 
-		print(output.decode('ascii'))
+	def PrintOutput(self):
+		print(self.output.decode('ascii'))
 
 def send_command(shell, cmd):
 
@@ -43,3 +44,14 @@ def send_enable(shell, password):
 	shell.send('enable\n')
 	shell.send(password + '\n')
 	time.sleep(1)
+
+def disable_paging(remote_conn):
+	'''Disable paging on a Cisco router'''
+
+	remote_conn.send("terminal length 0\n")
+	time.sleep(1)
+
+	# Clear the buffer on the screen
+	output = remote_conn.recv(1000)
+
+	return output
