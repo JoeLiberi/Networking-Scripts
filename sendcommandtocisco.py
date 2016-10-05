@@ -32,6 +32,15 @@ if __name__ == '__main__':
 	elif ipaddress_regex.match(args.ipaddress) is None:
 		print("Please enter a valid IP address")
 		print(parser.print_help())
+	elif args.password is None:
+		print("Please enter a Password")
+		print(parser.print_help())
+	elif args.username is None:
+		print("Please enter a Username")
+		print(parser.print_help())
+	elif args.command is None:
+		print("Please enter a command to run")
+		print(parser.print_help())
 	
 	if args.asa:
 		asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
