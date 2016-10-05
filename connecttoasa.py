@@ -11,7 +11,7 @@ class ConnectToASA():
 		self.password = password
 		self.cmd = cmd
 
-	def ConnectAndSendASA(self):
+	def ConnectASA(self):
 
 		ssh=paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -20,14 +20,27 @@ class ConnectToASA():
 		ssh.connect(self.ip, username=self.username, password=self.password,look_for_keys=False, allow_agent=False)
 
 		remote_conn = ssh.invoke_shell()
-		send_enable(remote_conn, password)
-		self.output = send_command(remote_conn, sys.argv[1])
 
 		return remote_conn
+
+	def SendASA(self):
+
+		send_enable(remote_conn, password)
+		self.output = send_command(remote_conn, self.cmd)
 
 	def PrintOutput(self):
 
 		print(self.output.decode('ascii'))
+
+	def CheckOS(self):
+		self.output = send_command(self.remote_conn, "sh ver")
+		asa_regex = re.compile(r'(Adaptive Security Appliance)')
+		self.output = self.output.decode('ascii')
+
+		if asa_regex.match(self.output):
+			return True
+		else:
+			return False
 
 def send_command(shell, cmd):
 

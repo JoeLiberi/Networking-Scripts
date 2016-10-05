@@ -9,8 +9,9 @@ class ConnectToIOS():
 		self.username = username
 		self.password = password
 		self.cmd = cmd
+		self.CheckOS()
 
-	def ConnectAndSendIOS(self):
+	def ConnectIOS(self):
 
 		ssh=paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -18,17 +19,30 @@ class ConnectToIOS():
 		print("Opening connection please wait.....\n")
 		ssh.connect(self.ip, username=self.username, password=self.password,look_for_keys=False, allow_agent=False)
 
-		remote_conn = ssh.invoke_shell()
+		self.remote_conn = ssh.invoke_shell()	
+
+		return remote_conn
+
+	def SendIOS(self):
 		# Turn off paging
 		disable_paging(remote_conn)
 
 		send_enable(remote_conn, self.password)
-		self.output = send_command(remote_conn, self.cmd)
-
-		return remote_conn
+		self.output = send_command(self.remote_conn, self.cmd)
 
 	def PrintOutput(self):
+
 		print(self.output.decode('ascii'))
+
+	def CheckOS(self):
+		self.output = send_command(self.remote_conn, "sh ver")
+		ios_regex = re.compile(r'(Cisco IOS Software)')
+		self.output = self.output.decode('ascii')
+
+		if ios_regex.match(self.output):
+			return True
+		else:
+			return False
 
 def send_command(shell, cmd):
 
