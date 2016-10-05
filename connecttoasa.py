@@ -11,7 +11,7 @@ class ConnectToASA():
 		self.password = password
 		self.cmd = cmd
 
-	def ConnectAndSend(self):
+	def ConnectAndSendASA(self):
 
 		ssh=paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -20,12 +20,13 @@ class ConnectToASA():
 		ssh.connect(self.ip, username=self.username, password=self.password,look_for_keys=False, allow_agent=False)
 
 		remote_conn = ssh.invoke_shell()
-
 		send_enable(remote_conn, password)
-
 		self.output = send_command(remote_conn, sys.argv[1])
 
+		return remote_conn
+
 	def PrintOutput(self):
+
 		print(self.output.decode('ascii'))
 
 def send_command(shell, cmd):

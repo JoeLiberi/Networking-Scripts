@@ -10,7 +10,7 @@ class ConnectToIOS():
 		self.password = password
 		self.cmd = cmd
 
-	def ConnectAndSend(self):
+	def ConnectAndSendIOS(self):
 
 		ssh=paramiko.SSHClient()
 		ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -22,9 +22,10 @@ class ConnectToIOS():
 		# Turn off paging
 		disable_paging(remote_conn)
 
-		send_enable(remote_conn, password)
-
+		send_enable(remote_conn, self.password)
 		self.output = send_command(remote_conn, self.cmd)
+
+		return remote_conn
 
 	def PrintOutput(self):
 		print(self.output.decode('ascii'))
