@@ -1,4 +1,3 @@
 To Do:
 
-- Device check; make sure its an ASA or a IOS device before running commands.
 - More arguement checks, I dont have any idea what else we can check but im sure theres something.
