@@ -57,7 +57,7 @@ def send_command(shell, cmd):
 	print("Executing command: " + cmd)
 	shell.send(cmd + '\n')
 	time.sleep(1)
-	output = shell.recv(5000)
+	output = shell.recv(10000)
 
 	return output
 

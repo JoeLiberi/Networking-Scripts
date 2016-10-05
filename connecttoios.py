@@ -56,7 +56,7 @@ def send_command(shell, cmd):
 	shell.send(cmd + '\n')
 	# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
 	time.sleep(1)
-	output = shell.recv(5000)
+	output = shell.recv(10000)
 	# output = stdout.read()
 
 	return output
