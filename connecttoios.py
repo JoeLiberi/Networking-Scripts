@@ -4,11 +4,15 @@ import paramiko, time, os, re
 
 class ConnectToIOS():
 
-	def __init__(self, ip, username, password, cmd):
+	def __init__(self, ip, username, password, enablepasswd, cmd):
 		self.ip = ip
 		self.username = username
 		self.password = password
+		self.enablepasswd = enablepasswd
 		self.cmd = cmd
+
+		if self.enablepasswd is None:
+			self.enablepasswd = self.password
 
 	def ConnectIOS(self):
 
@@ -20,7 +24,7 @@ class ConnectToIOS():
 
 		self.remote_conn = self.ssh.invoke_shell()
 		self.remote_conn.send_ready()	
-		send_enable(self.remote_conn, self.password)
+		send_enable(self.remote_conn, self.enablepasswd)
 
 	def SendIOS(self):
 		self.remote_conn.send_ready()

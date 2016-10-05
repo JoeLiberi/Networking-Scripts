@@ -5,11 +5,15 @@ import paramiko, time, os, sys, re
 
 class ConnectToASA():
 
-	def __init__(self, ip, username, password, cmd):
+	def __init__(self, ip, username, password, enablepasswd, cmd):
 		self.ip = ip
 		self.username = username
 		self.password = password
+		self.enablepasswd = enablepasswd
 		self.cmd = cmd
+
+		if self.enablepasswd is None:
+			self.enablepasswd = self.password
 
 	def ConnectASA(self):
 
@@ -21,7 +25,7 @@ class ConnectToASA():
 
 		self.remote_conn = self.ssh.invoke_shell()
 		self.remote_conn.send_ready()	
-		send_enable(self.remote_conn, self.password)
+		send_enable(self.remote_conn, self.enablepasswd)
 
 		# return self.remote_conn
 

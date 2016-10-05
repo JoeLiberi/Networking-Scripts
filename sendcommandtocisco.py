@@ -15,6 +15,7 @@ if __name__ == '__main__':
 	parser.add_argument("-i", "--ios", help="send command to IOS device", action='store_true')
 	parser.add_argument("-ip", "--ipaddress", type=str)
 	parser.add_argument("-p", "--password", type=str)
+	parser.add_argument("-ep", "--enablepasswd", type=str)
 	parser.add_argument("-u", "--username", type=str)
 	parser.add_argument("-c", "--command", type=str)
 
@@ -33,7 +34,7 @@ if __name__ == '__main__':
 		print(parser.print_help())
 	
 	if args.asa:
-		asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.command)
+		asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
 		asa_conn.ConnectASA()
 
 		if asa_conn.CheckOS():
@@ -44,7 +45,7 @@ if __name__ == '__main__':
 			print(parser.print_help())
 
 	elif args.ios:
-		ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.command)
+		ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
 		ios_conn.ConnectIOS()
 		
 		if ios_conn.CheckOS():
