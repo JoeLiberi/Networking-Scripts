@@ -46,10 +46,8 @@ if __name__ == '__main__':
 	elif args.ios:
 		ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.command)
 		ios_conn.ConnectIOS()
-		check = ios_conn.CheckOS()
-		print(ios_conn.PrintOutput())
 		
-		if check:
+		if ios_conn.CheckOS():
 			ios_conn.SendIOS()
 			ios_conn.PrintOutput()
 		else:

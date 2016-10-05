@@ -30,7 +30,7 @@ class ConnectToIOS():
 
 	def PrintOutput(self):
 
-		print(self.output)
+		print(self.output.decode('ascii'))
 
 	def CheckOS(self):
 		self.remote_conn.send_ready()
@@ -38,10 +38,10 @@ class ConnectToIOS():
 		disable_paging(self.remote_conn)
 
 		self.output = send_command(self.remote_conn, "sh ver")
-		ios_regex = re.compile(r'(Cisco IOS Software)')
+		ios_regex = re.compile('Cisco IOS Software')
 		self.output = self.output.decode('ascii')
 
-		if ios_regex.match(self.output):
+		if ios_regex.search(self.output):
 			return True
 		else:
 			return False
@@ -62,7 +62,7 @@ def send_enable(shell, password):
 	shell.send('\n')
 	shell.send('enable\n')
 	shell.send(password + '\n')
-	time.sleep(1)
+	time.sleep(2)
 
 def disable_paging(remote_conn):
 	'''Disable paging on a Cisco router'''

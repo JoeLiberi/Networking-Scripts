@@ -35,11 +35,15 @@ class ConnectToASA():
 
 	def CheckOS(self):
 		self.remote_conn.send_ready()
+
+		# Turn off paging
+		disable_paging(self.remote_conn)
+
 		self.output = send_command(self.remote_conn, "sh ver")
 		asa_regex = re.compile(r'(Adaptive Security Appliance)')
 		self.output = self.output.decode('ascii')
 
-		if asa_regex.match(self.output):
+		if asa_regex.search(self.output):
 			return True
 		else:
 			return False
@@ -59,3 +63,17 @@ def send_enable(shell, password):
 	shell.send('enable\n')
 	shell.send(password + '\n')
 	time.sleep(1)
+
+def disable_paging(remote_conn):
+	'''Disable paging on a ASA firewall'''
+
+	remote_conn.send("config t\n")
+	time.sleep(1)
+	remote_conn.send("pager 0\n")
+	time.sleep(1)
+	remote_conn.send("end\n")
+
+	# Clear the buffer on the screen
+	output = remote_conn.recv(1000)
+
+	return output
