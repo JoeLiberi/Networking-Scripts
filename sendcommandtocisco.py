@@ -55,6 +55,7 @@ if __name__ == '__main__':
 	'''
 	Read command file into a list
 	'''
+	cmd_list = []
 	if args.command_file:
 		with open(args.command_file, mode='r') as cmdfile:
 			cmd_list = cmdfile.readlines()
@@ -64,10 +65,10 @@ if __name__ == '__main__':
 		if args.file:
 			with open(args.file, mode='r') as infile:
 				for line in infile:
-					if cmd_list:
-						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
-					else:
+					if not cmd_list:
 						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+					else:
+						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
 				
 					try:
 						asa_conn.ConnectASA()
@@ -100,11 +101,11 @@ if __name__ == '__main__':
 		if args.file:
 			with open(args.file, mode='r') as infile:
 				for line in infile:
-					if cmd_list:
-						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
+					if not cmd_list:
+						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
 					else:
-						ios_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
-						
+						ios_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
+
 					try:
 						ios_conn.ConnectIOS()
 					except Exception as e:
