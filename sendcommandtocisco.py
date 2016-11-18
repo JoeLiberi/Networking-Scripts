@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 
 
-import argparse, re
+import argparse, re, os, sys
 from connecttoasa import ConnectToASA
 from connecttoios import ConnectToIOS
 
@@ -18,54 +18,105 @@ if __name__ == '__main__':
 	parser.add_argument("-ep", "--enablepasswd", type=str)
 	parser.add_argument("-u", "--username", type=str)
 	parser.add_argument("-c", "--command", type=str)
+	parser.add_argument("-f", "--file", type=str)
 
 
 	args = parser.parse_args()
 
 	# Input Checks
-	if args.ipaddress is None:
-		print("Please enter a IP address")
+	if args.file is None:
+		if args.ipaddress is None:
+			print(parser.print_help())
+			sys.exit("Please enter a IP address")
+		elif type(args.ipaddress) is not str:
+			print(parser.print_help())
+			sys.exit("Please enter a valid IP address")
+		elif ipaddress_regex.match(args.ipaddress) is None:
+			print(parser.print_help())
+			sys.exit("Please enter a valid IP address")
+	else:
+		with open(args.file, mode='r') as infile:
+			for line in infile:
+				if ipaddress_regex.match(line) is None:
+					print(parser.print_help())
+					sys.exit("There is a non IP address in your file. Please reveiw and re-run")
+
+	if args.password is None:
 		print(parser.print_help())
-	elif type(args.ipaddress) is not str:
-		print("Please enter a valid IP address")
-		print(parser.print_help())
-	elif ipaddress_regex.match(args.ipaddress) is None:
-		print("Please enter a valid IP address")
-		print(parser.print_help())
-	elif args.password is None:
-		print("Please enter a Password")
-		print(parser.print_help())
+		sys.exit("Please enter a Password")
 	elif args.username is None:
-		print("Please enter a Username")
 		print(parser.print_help())
+		sys.exit("Please enter a Username")
 	elif args.command is None:
-		print("Please enter a command to run")
 		print(parser.print_help())
+		sys.exit("Please enter a command to run")
 	
 	if args.asa:
-		asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
-		asa_conn.ConnectASA()
+		if args.file:
+			with open(args.file, mode='r') as infile:
+				for line in infile:
+					asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+					try:
+						asa_conn.ConnectASA()
+					except Exception as e:
+						print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+						continue
 
-		if asa_conn.CheckOS():
-			asa_conn.SendASA()
-			asa_conn.PrintOutput()
+					if asa_conn.CheckOS():
+						asa_conn.SendASA()
+						asa_conn.PrintOutput()
+					else:
+						print(parser.print_help())
+						sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
 		else:
-			print("You are using the wrong arg, this is for ASA devices, use -i")
-			print(parser.print_help())
+			asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
+			try:
+				asa_conn.ConnectASA()
+			except Exception as e:
+				sys.exit("Shit Broke")
+
+			if asa_conn.CheckOS():
+				asa_conn.SendASA()
+				asa_conn.PrintOutput()
+			else:
+				print(parser.print_help())
+				sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
+
 
 	elif args.ios:
-		ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
-		ios_conn.ConnectIOS()
-		
-		if ios_conn.CheckOS():
-			ios_conn.SendIOS()
-			ios_conn.PrintOutput()
+		if args.file:
+			with open(args.file, mode='r') as infile:
+				for line in infile:
+					ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+					try:
+						ios_conn.ConnectIOS()
+					except Exception as e:
+						print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+						continue
+					
+					if ios_conn.CheckOS():
+						ios_conn.SendIOS()
+						ios_conn.PrintOutput()
+					else:
+						print(parser.print_help())
+						sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
 		else:
-			print("You are using the wrong arg, this is for IOS devices, use -a")
-			print(parser.print_help())
+			ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
+			try:
+				ios_conn.ConnectIOS()
+			except Exception as e:
+				print(e)
+				sys.exit()
+			
+			if ios_conn.CheckOS():
+				ios_conn.SendIOS()
+				ios_conn.PrintOutput()
+			else:
+				print(parser.print_help())
+				sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
 
 	else:
-		print("Select ASA or IOS...")
 		print(parser.print_help())
+		sys.exit("Select ASA or IOS...")
 
 
