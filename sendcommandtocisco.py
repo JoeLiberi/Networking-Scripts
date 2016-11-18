@@ -103,7 +103,7 @@ if __name__ == '__main__':
 					if cmd_list:
 						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
 					else:
-						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+						ios_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
 						
 					try:
 						ios_conn.ConnectIOS()
