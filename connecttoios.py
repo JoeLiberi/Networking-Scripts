@@ -52,11 +52,19 @@ class ConnectToIOS():
 
 def send_command(shell, cmd):
 
-	print("Executing command: " + cmd)
-	shell.send(cmd + '\n')
-	# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
-	time.sleep(1)
-	output = shell.recv(10000)
+	if type(cmd) is list:
+		for c in cmd:
+			print("Executing command: " + c)
+			shell.send(c + '\n')
+			# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
+			time.sleep(1)
+			output = shell.recv(10000)
+	else:
+		print("Executing command: " + cmd)
+		shell.send(cmd + '\n')
+		# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
+		time.sleep(1)
+		output = shell.recv(10000)
 	# output = stdout.read()
 
 	return output

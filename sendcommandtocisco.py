@@ -19,6 +19,7 @@ if __name__ == '__main__':
 	parser.add_argument("-u", "--username", type=str)
 	parser.add_argument("-c", "--command", type=str)
 	parser.add_argument("-f", "--file", type=str)
+	parser.add_argument("-cf", "--command_file", type=str)
 
 
 	args = parser.parse_args()
@@ -47,15 +48,27 @@ if __name__ == '__main__':
 	elif args.username is None:
 		print(parser.print_help())
 		sys.exit("Please enter a Username")
-	elif args.command is None:
+	elif args.command is None and args.command_file is None:
 		print(parser.print_help())
 		sys.exit("Please enter a command to run")
+
+	'''
+	Read command file into a list
+	'''
+	if args.command_file:
+		with open(args.command_file, mode='r') as cmdfile:
+			cmd_list = cmdfile.readlines()
+
 	
 	if args.asa:
 		if args.file:
 			with open(args.file, mode='r') as infile:
 				for line in infile:
-					asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+					if cmd_list:
+						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
+					else:
+						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+				
 					try:
 						asa_conn.ConnectASA()
 					except Exception as e:
@@ -87,7 +100,11 @@ if __name__ == '__main__':
 		if args.file:
 			with open(args.file, mode='r') as infile:
 				for line in infile:
-					ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+					if cmd_list:
+						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
+					else:
+						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
+						
 					try:
 						ios_conn.ConnectIOS()
 					except Exception as e:
