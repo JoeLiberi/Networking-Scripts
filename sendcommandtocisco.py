@@ -74,6 +74,7 @@ if __name__ == '__main__':
 						asa_conn.ConnectASA()
 					except Exception as e:
 						print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+						print(e)
 						continue
 
 					if asa_conn.CheckOS():
@@ -104,12 +105,13 @@ if __name__ == '__main__':
 					if not cmd_list:
 						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
 					else:
-						ios_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
+						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
 
 					try:
 						ios_conn.ConnectIOS()
 					except Exception as e:
 						print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+						print(e)
 						continue
 					
 					if ios_conn.CheckOS():
