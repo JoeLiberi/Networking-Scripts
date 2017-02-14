@@ -31,8 +31,12 @@ class ConnectToIOS():
 	def ConnectTelnetIOS(self):
 
 		self.remote_conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.remote_conn.settimeout(2)
-		self.remote_conn.connect((self.ip, self.tport))
+		self.remote_conn.settimeout(5)
+
+		try:
+			self.remote_conn.connect((self.ip, self.tport))
+		except Exception as e:
+			print(e)
 
 		send_command(self.remote_conn, self.username)
 		send_command(self.remote_conn, self.password)

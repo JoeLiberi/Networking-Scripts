@@ -154,12 +154,14 @@ if __name__ == '__main__':
 					if args.telnet:
 						try:
 							ios_conn.ConnectTelnetIOS()
-							ios_conn.SendIOS(args)
 							# ios_conn.PrintOutput()
 						except Exception as e:
 							print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
 							print(e)
 							continue
+
+						ios_conn.SendIOS(args)
+
 					else:
 						try:
 							ios_conn.ConnectIOS()
@@ -184,16 +186,18 @@ if __name__ == '__main__':
 			if args.telnet:
 				try:
 					ios_conn.ConnectTelnetIOS()
-					ios_conn.SendIOS(args)
 					# ios_conn.PrintOutput()
 				except Exception as e:
-					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print("Ran into an error on {ip}, moving on".format(ip=args.ipaddress))
 					print(e)
+
+				ios_conn.SendIOS(args)
+
 			else:
 				try:
 					ios_conn.ConnectIOS()
 				except Exception as e:
-					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print("Ran into an error on {ip}, moving on".format(ip=args.ipaddress))
 					print(e)
 				
 				if ios_conn.CheckOS():
@@ -209,10 +213,12 @@ if __name__ == '__main__':
 			if args.telnet:
 				try:
 					ios_conn.ConnectTelnetIOS()
-					ios_conn.SendIOS(args)
 					# ios_conn.PrintOutput()
 				except Exception as e:
 					print(e)
+
+				ios_conn.SendIOS(args)
+				
 			else:
 				try:
 					ios_conn.ConnectIOS()
