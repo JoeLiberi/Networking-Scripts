@@ -1,6 +1,6 @@
 #!/usr/local/bin/python3
 
-import paramiko, time, os, re
+import paramiko, time, os, re, socket, select
 
 class ConnectToIOS():
 
@@ -10,6 +10,8 @@ class ConnectToIOS():
 		self.password = password
 		self.enablepasswd = enablepasswd
 		self.cmd = cmd
+		self.tport = 23
+
 
 		if self.enablepasswd is None:
 			self.enablepasswd = self.password
@@ -19,15 +21,29 @@ class ConnectToIOS():
 		self.ssh=paramiko.SSHClient()
 		self.ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-		print("Opening connection please wait.....\n")
+		print("Opening connection to {ip} please wait.....\n".format(ip=self.ip))
 		self.ssh.connect(self.ip, username=self.username, password=self.password,look_for_keys=False, allow_agent=False)
 
 		self.remote_conn = self.ssh.invoke_shell()
 		self.remote_conn.send_ready()	
 		send_enable(self.remote_conn, self.enablepasswd)
 
-	def SendIOS(self):
-		self.remote_conn.send_ready()
+	def ConnectTelnetIOS(self):
+
+		self.remote_conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		self.remote_conn.settimeout(2)
+		self.remote_conn.connect((self.ip, self.tport))
+
+		send_command(self.remote_conn, self.username)
+		send_command(self.remote_conn, self.password)
+		send_enable(self.remote_conn, self.enablepasswd)
+
+		# self.output = send_command(self.remote_conn, self.cmd)
+
+	def SendIOS(self, args):
+		if not args.telnet:
+			self.remote_conn.send_ready()
+			
 		# Turn off paging
 		disable_paging(self.remote_conn)
 		self.output = send_command(self.remote_conn, self.cmd)
@@ -54,14 +70,16 @@ def send_command(shell, cmd):
 
 	if type(cmd) is list:
 		for c in cmd:
+			c = bytes(c, "utf-8")
 			print("Executing command: " + c)
-			shell.send(c + '\n')
+			shell.send(c + "\n".encode('ascii'))
 			# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
 			time.sleep(1)
 			output = shell.recv(10000)
 	else:
 		print("Executing command: " + cmd)
-		shell.send(cmd + '\n')
+		cmd = bytes(cmd, "utf-8")
+		shell.send(cmd + "\n".encode('ascii'))
 		# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
 		time.sleep(1)
 		output = shell.recv(10000)
@@ -71,15 +89,16 @@ def send_command(shell, cmd):
 
 def send_enable(shell, password):
 	print("Sending enable.....\n")
-	shell.send('\n')
-	shell.send('enable\n')
-	shell.send(password + '\n')
+	shell.send('\n'.encode('ascii'))
+	shell.send('enable\n'.encode('ascii'))
+	password = bytes(password, "utf-8")
+	shell.send(password + '\n'.encode('ascii'))
 	time.sleep(2)
 
 def disable_paging(remote_conn):
 	'''Disable paging on a Cisco router'''
 
-	remote_conn.send("terminal length 0\n")
+	remote_conn.send("terminal length 0\n".encode('ascii'))
 	time.sleep(1)
 
 	# Clear the buffer on the screen

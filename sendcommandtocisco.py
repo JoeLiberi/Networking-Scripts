@@ -20,6 +20,7 @@ if __name__ == '__main__':
 	parser.add_argument("-c", "--command", type=str)
 	parser.add_argument("-f", "--file", type=str)
 	parser.add_argument("-cf", "--command_file", type=str)
+	parser.add_argument("-t", "--telnet", help="use telnet instead of SSH", action='store_true')
 
 
 	args = parser.parse_args()
@@ -60,7 +61,7 @@ if __name__ == '__main__':
 		with open(args.command_file, mode='r') as cmdfile:
 			cmd_list = cmdfile.readlines()
 
-	
+
 	if args.asa:
 		if args.file:
 			with open(args.file, mode='r') as infile:
@@ -69,33 +70,76 @@ if __name__ == '__main__':
 						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, args.command)
 					else:
 						asa_conn = ConnectToASA(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
-				
-					try:
-						asa_conn.ConnectASA()
-					except Exception as e:
-						print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
-						print(e)
-						continue
-
-					if asa_conn.CheckOS():
-						asa_conn.SendASA()
-						asa_conn.PrintOutput()
+					
+					if args.telnet:
+						try:
+							asa_conn.ConnectTelnetASA()
+						except Exception as e:
+							print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+							print(e)
+							continue
 					else:
-						print(parser.print_help())
-						sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
+						try:
+							asa_conn.ConnectASA()
+						except Exception as e:
+							print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+							print(e)
+							continue
+
+						if asa_conn.CheckOS():
+							asa_conn.SendASA()
+							asa_conn.PrintOutput()
+						else:
+							print(parser.print_help())
+							sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
+
+		elif args.command_file:
+			if not cmd_list:
+				asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
+			else:
+				asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, cmd_list)
+
+			if args.telnet:
+				try:
+					asa_conn.ConnectTelnetASA()
+				except Exception as e:
+					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print(e)
+			else:
+				try:
+					asa_conn.ConnectASA()
+				except Exception as e:
+					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print(e)
+
+				if asa_conn.CheckOS():
+					asa_conn.SendASA()
+					asa_conn.PrintOutput()
+				else:
+					print(parser.print_help())
+					sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
+
 		else:
 			asa_conn = ConnectToASA(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
-			try:
-				asa_conn.ConnectASA()
-			except Exception as e:
-				sys.exit("Shit Broke")
 
-			if asa_conn.CheckOS():
-				asa_conn.SendASA()
-				asa_conn.PrintOutput()
+			if args.telnet:
+				try:
+					asa_conn.ConnectTelnetASA()
+				except Exception as e:
+					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print(e)
 			else:
-				print(parser.print_help())
-				sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
+				try:
+					asa_conn.ConnectASA()
+				except Exception as e:
+					sys.exit("Shit Broke")
+
+				if asa_conn.CheckOS():
+					asa_conn.SendASA()
+					asa_conn.PrintOutput()
+				else:
+					print(parser.print_help())
+					sys.exit("You are using the wrong arg, this is for ASA devices, use -i")
 
 
 	elif args.ios:
@@ -107,33 +151,78 @@ if __name__ == '__main__':
 					else:
 						ios_conn = ConnectToIOS(line.rstrip(), args.username, args.password, args.enablepasswd, cmd_list)
 
-					try:
-						ios_conn.ConnectIOS()
-					except Exception as e:
-						print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
-						print(e)
-						continue
-					
-					if ios_conn.CheckOS():
-						ios_conn.SendIOS()
-						ios_conn.PrintOutput()
+					if args.telnet:
+						try:
+							ios_conn.ConnectTelnetIOS()
+						except Exception as e:
+							print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+							print(e)
+							continue
 					else:
-						print(parser.print_help())
-						sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
+						try:
+							ios_conn.ConnectIOS()
+						except Exception as e:
+							print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+							print(e)
+							continue
+						
+						if ios_conn.CheckOS():
+							ios_conn.SendIOS()
+							ios_conn.PrintOutput()
+						else:
+							print(parser.print_help())
+							sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
+
+		elif args.command_file:
+			if not cmd_list:
+				ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
+			else:
+				ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.enablepasswd, cmd_list)
+
+			if args.telnet:
+				try:
+					ios_conn.ConnectTelnetIOS()
+					ios_conn.PrintOutput()
+				except Exception as e:
+					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print(e)
+			else:
+				try:
+					ios_conn.ConnectIOS()
+				except Exception as e:
+					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
+					print(e)
+				
+				if ios_conn.CheckOS():
+					ios_conn.SendIOS()
+					ios_conn.PrintOutput()
+				else:
+					print(parser.print_help())
+					sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
+
 		else:
 			ios_conn = ConnectToIOS(args.ipaddress, args.username, args.password, args.enablepasswd, args.command)
-			try:
-				ios_conn.ConnectIOS()
-			except Exception as e:
-				print(e)
-				sys.exit()
-			
-			if ios_conn.CheckOS():
-				ios_conn.SendIOS()
-				ios_conn.PrintOutput()
+
+			if args.telnet:
+				try:
+					ios_conn.ConnectTelnetIOS()
+					ios_conn.SendIOS(args)
+					ios_conn.PrintOutput()
+				except Exception as e:
+					print(e)
 			else:
-				print(parser.print_help())
-				sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
+				try:
+					ios_conn.ConnectIOS()
+				except Exception as e:
+					print(e)
+					sys.exit()
+				
+				if ios_conn.CheckOS():
+					ios_conn.SendIOS()
+					ios_conn.PrintOutput()
+				else:
+					print(parser.print_help())
+					sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
 
 	else:
 		print(parser.print_help())

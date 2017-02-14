@@ -1,0 +1,5 @@
+config t
+access-list 90 permit 172.16.30.233 log
+snmp-server community mill$t0n3 RO 90
+exit
+wr mem
