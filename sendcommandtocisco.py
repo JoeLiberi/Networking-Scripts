@@ -154,6 +154,8 @@ if __name__ == '__main__':
 					if args.telnet:
 						try:
 							ios_conn.ConnectTelnetIOS()
+							ios_conn.SendIOS(args)
+							# ios_conn.PrintOutput()
 						except Exception as e:
 							print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
 							print(e)
@@ -167,8 +169,8 @@ if __name__ == '__main__':
 							continue
 						
 						if ios_conn.CheckOS():
-							ios_conn.SendIOS()
-							ios_conn.PrintOutput()
+							ios_conn.SendIOS(args)
+							# ios_conn.PrintOutput()
 						else:
 							print(parser.print_help())
 							sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
@@ -182,7 +184,8 @@ if __name__ == '__main__':
 			if args.telnet:
 				try:
 					ios_conn.ConnectTelnetIOS()
-					ios_conn.PrintOutput()
+					ios_conn.SendIOS(args)
+					# ios_conn.PrintOutput()
 				except Exception as e:
 					print("Ran into an error on {ip}, moving on".format(ip=line.rstrip()))
 					print(e)
@@ -194,8 +197,8 @@ if __name__ == '__main__':
 					print(e)
 				
 				if ios_conn.CheckOS():
-					ios_conn.SendIOS()
-					ios_conn.PrintOutput()
+					ios_conn.SendIOS(args)
+					# ios_conn.PrintOutput()
 				else:
 					print(parser.print_help())
 					sys.exit("You are using the wrong arg, this is for IOS devices, use -a")
@@ -207,7 +210,7 @@ if __name__ == '__main__':
 				try:
 					ios_conn.ConnectTelnetIOS()
 					ios_conn.SendIOS(args)
-					ios_conn.PrintOutput()
+					# ios_conn.PrintOutput()
 				except Exception as e:
 					print(e)
 			else:
@@ -218,8 +221,8 @@ if __name__ == '__main__':
 					sys.exit()
 				
 				if ios_conn.CheckOS():
-					ios_conn.SendIOS()
-					ios_conn.PrintOutput()
+					ios_conn.SendIOS(args)
+					# ios_conn.PrintOutput()
 				else:
 					print(parser.print_help())
 					sys.exit("You are using the wrong arg, this is for IOS devices, use -a")

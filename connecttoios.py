@@ -43,7 +43,7 @@ class ConnectToIOS():
 	def SendIOS(self, args):
 		if not args.telnet:
 			self.remote_conn.send_ready()
-			
+
 		# Turn off paging
 		disable_paging(self.remote_conn)
 		self.output = send_command(self.remote_conn, self.cmd)
@@ -70,12 +70,14 @@ def send_command(shell, cmd):
 
 	if type(cmd) is list:
 		for c in cmd:
-			c = bytes(c, "utf-8")
 			print("Executing command: " + c)
+			c = bytes(c, "utf-8")
 			shell.send(c + "\n".encode('ascii'))
 			# stdin, stdout, stderr = shell.exec_command(cmd + '\n')
 			time.sleep(1)
 			output = shell.recv(10000)
+
+			print(output.decode('ascii'))
 	else:
 		print("Executing command: " + cmd)
 		cmd = bytes(cmd, "utf-8")
