@@ -30,16 +30,6 @@ class ConnectToASA():
 
 		# return self.remote_conn
 
-	def ConnectTelnetASA(self):
-
-		s.socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		s.settimeout(2)
-		s.connect((self.ip, self.tport))
-
-		self.output = send_command(s, self.cmd)
-
-		return self.output
-
 	def SendASA(self):
 		self.remote_conn.send_ready()
 		self.output = send_command(self.remote_conn, self.cmd)
