@@ -1,5 +1,0 @@
-config t
-object-group network beco_nets
-network-object 10.1.16.0 255.255.255.0
-end
-wr mem
